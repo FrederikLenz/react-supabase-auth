@@ -1,4 +1,20 @@
-import { Form, Link } from "react-router";
+import { Form, Link, redirect } from "react-router";
+import { supabase } from "../lib/supabase";
+
+export async function clientAction({ request }) {
+  const formData = await request.formData();
+  const email = formData.get("email");
+  const password = formData.get("password");
+
+  const { error } = await supabase.auth.signUp({ email, password });
+
+  if (error) {
+    console.error("Registration error:", error);
+    return null;
+  }
+
+  return redirect("/login?registered=true");  
+}
 
 export default function Register() {
   return (
