@@ -1,19 +1,24 @@
 import { Form, Link, redirect, useLoaderData } from "react-router";
 import { supabase } from "../lib/supabase";
+import { apiFetch } from "../lib/apiFetch";
 
 export async function clientLoader() {
-  // getUser() sender tokenet til Supabase, som tjekker signaturen
-  const { data, error } = await supabase.auth.getUser();
+  const {
+    data: { session},
+  } = await supabase.auth.getSession();
 
-  if (error || !data.user) {
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const response = await apiFetch("/auth/v1/user");
+
+  if (!response.ok) {
     return redirect("/login");
   }
 
-  return { user: data.user };
+  const user = await response.json();
+  return { user };
 }
 
 export async function clientAction() {
-  // Fjerner tokenet fra localStorage
   await supabase.auth.signOut();
   return redirect("/login");
 }
