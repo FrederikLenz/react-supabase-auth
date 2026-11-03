@@ -1,4 +1,11 @@
-import { Form, Link, redirect, useActionData, useNavigation, useSearchParams } from "react-router";
+import {
+  Form,
+  Link,
+  redirect,
+  useActionData,
+  useNavigation,
+  useSearchParams,
+} from "react-router";
 import { supabase } from "../lib/supabase";
 
 export async function clientAction({ request }) {
@@ -10,13 +17,14 @@ export async function clientAction({ request }) {
     return { error: "Email and password are required" };
   }
 
+  // Supabase sammenligner passwordet med hashen og gemmer et JWT i localStorage
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
     return { error: "Invalid email or password" };
   }
 
-  return redirect("/");
+  return redirect("/profile");
 }
 
 export default function Login() {
@@ -34,7 +42,9 @@ export default function Login() {
         <p className="auth-subtitle">Log in with your email and password</p>
 
         {justRegistered && (
-          <div className="success-message">Account created successfully! Please log in.</div>
+          <div className="success-message">
+            Account created successfully! Please log in.
+          </div>
         )}
 
         <Form method="post" className="auth-form">
@@ -61,9 +71,13 @@ export default function Login() {
               placeholder="Your password"
             />
           </div>
-          {actionData?.error && <div className="error-message">{actionData.error}</div>}
+
+          {actionData?.error && (
+            <div className="error-message">{actionData.error}</div>
+          )}
+
           <button type="submit" disabled={isSubmitting} className="btn-primary">
-            {isSubmitting ? "Logging in": "Log in"}
+            {isSubmitting ? "Logging in..." : "Log In"}
           </button>
         </Form>
 
